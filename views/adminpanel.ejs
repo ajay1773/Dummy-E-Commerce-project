@@ -1,0 +1,77 @@
+<div class="card text-center mt-5">
+    <div class="card-header">
+        Featured
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">Special title treatment</h5>
+        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+        <button class="btn btn-primary" id="req">SEND</button>
+    </div>
+    <div class="card-footer text-muted">
+        2 days ago <p id="demo">
+            Seller List
+        </p>
+
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">First</th>
+                    <th scope="col">Last</th>
+                    <th scope="col">Handle</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">1</th>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td>@mdo</td>
+                    <td><button class="btn btn-primary">Accept</button></td>
+                    <td><button class="btn btn-warning">Reject</button></td>
+                </tr>
+                <tr>
+                    <th scope="row">2</th>
+                    <td>Jacob</td>
+                    <td>Thornton</td>
+                    <td>@fat</td>
+                    <td><button class="btn btn-primary">Accept</button></td>
+                    <td><button class="btn btn-warning">Reject</button></td>
+                </tr>
+                <tr>
+                    <th scope="row">3</th>
+                    <td>Larry the Bird</td>
+                    <td>Bullocks</td>
+                    <td>@twitter</td>
+                    <td><button class="btn btn-primary">Accept</button></td>
+                    <td><button class="btn btn-warning">Reject</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    document.getElementById("req").addEventListener('click', () => {
+        var url = "https://jsonplaceholder.typicode.com/users";
+        var myHeaders = new Headers({
+            'Content-Type': 'text/plain',
+            'X-Custom-Header': 'hello world'
+        });
+
+        fetch("http://127.0.0.1:5000/Admin/DeleteButton", {
+                headers: myHeaders
+            })
+            .then(res => console.log(res));
+    });
+    var x = `<%= data %>`;
+    var stringx = JSON.stringify(x);
+    var jsonx = JSON.parse(stringx);
+    var newx = x.replace(/&#39;/g, " ");
+
+    console.log(newx);
+    //console.log(JSON.parse(newx));
+    x.forEach(element => {
+        var nodechild = element.name
+        console.log(nodechild);
+    });
+</script>
