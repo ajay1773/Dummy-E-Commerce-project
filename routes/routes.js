@@ -7,6 +7,7 @@ const nodemailer = require('nodemailer');
 const seller = require('../config/sellerRegDb');
 const bcrypt = require('bcryptjs');
 const xoauth2 = require('xoauth2');
+const merchent = require('../config/finalMerchSchema');
 const sendgridTransport = require('nodemailer-sendgrid-transport');
 const urlparser = require('body-parser').urlencoded({
     extended: false
@@ -14,9 +15,9 @@ const urlparser = require('body-parser').urlencoded({
 const passport = require('passport');
 require('dotenv').config();
 router.use(urlparser);
-/*
+
 //Sending emails to users 
-var options = {
+const options = {
     auth: {
         api_user: "ajaydhiman6151@gmail.com",
         api_key: "ajaydhiman6151"
@@ -32,7 +33,7 @@ var email = {
     text: 'hello world',
     html: "<h2>Hello this is me sending you a email</h2>"
 };
-
+/*
 client.sendMail(email, (err, info) => {
     if (err) {
         console.log(err);
@@ -41,6 +42,10 @@ client.sendMail(email, (err, info) => {
     }
 });
 */
+router.get("/", (req, res) => {
+    res.render('welcome');
+})
+
 router.get('/AdminPanel', (req, res) => {
     seller.find({}, (err, result) => {
         if (err) {
@@ -50,25 +55,86 @@ router.get('/AdminPanel', (req, res) => {
             var dataArray = Object.values(result);
 
             //dataArray.push(result);
-            console.log(dataArray);
+            console.log(result[0]);
             res.render('adminpanel', {
-                data: dataArray[0]
+                data: {
+                    users: result
+                }
             });
         }
     })
 
-})
+});
 
-router.get("/DeleteButton", (req, res) => {
-    console.log(JSON.stringify(req.headers));
+router.get("/DeleteButton/", (req, res) => {
+    console.log(req.headers.customheader);
+    const ID = req.headers.customheader;
+    const update = {
+        "flag": 3
+    };
+    seller.findByIdAndUpdate(ID, update, {
+            new: true
+        })
+        .then(user => console.log(user))
+        .catch(err => console.log(err))
     //Finding seller in database and deleting it
     res.json({
-        message: "ButtonPressed"
+        message: "DeleteButtonPressed"
     })
 });
 
+router.get("/AddButton", (req, res) => {
+    console.log(req.headers.customheader);
+    const ID = req.headers.customheader;
+    const update = {
+        "flag": 1
+    }
+    seller.findByIdAndUpdate(ID, update, {
+            new: true
+        }).then(user => {
+            console.log(user);
+
+            const newMerchent = new merchent({
+                "flag": user.flag,
+                "name": user.name,
+                "email": user.email,
+                "password": user.password,
+                "contact": user.contact,
+                "address": user.address,
+                "product_type": user.product_type,
+                "details": user.details
+            });
+
+            newMerchent.save()
+                .then(user => console.log("User saved!"))
+                .catch(err => console.log("could not save" + err));
+            /*var email = {
+                from: "ajaydhiman6151@gmail.com",
+                to: "dhimanshrishti2@gmail.com",
+                subject: "Hello",
+                text: 'hello world',
+                html: "<h2>Hello this is me sending you a email about your confirmation of becoming a seller</h2>"
+            };
+
+            client.sendMail(email, (err, info) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log("Mail sent...!");
+
+                }
+            });*/
+
+
+        })
+        .catch(err => console.log(err));
+    res.json({
+        message: "AddButton2"
+    })
+})
+
 router.post('/AdminLogin', (req, res) => {
-    console.log(req.body);
+    //console.log(req.body);
     let {
         adminid,
         password
@@ -79,7 +145,7 @@ router.post('/AdminLogin', (req, res) => {
         })
         .then(user => {
             if (!user) {
-                req.flash("error_msg", "User does no exist");
+                req.flash("error_msg", "User does not exist");
                 res.redirect('/Admin/AdminLogin');
             } else if (user.password !== password) {
                 req.flash("error_msg", "Wrong Password");
@@ -92,15 +158,15 @@ router.post('/AdminLogin', (req, res) => {
         .catch(err => console.log(err));
 });
 
-router.get("/", (req, res) => {
+router.get("/Seller", (req, res) => {
     res.render('sellerhome');
 });
 
-router.get('/Register', (req, res) => {
+router.get('/Seller/Register', (req, res) => {
     res.render('seller_register');
 });
 
-router.post("/Register", (req, res) => {
+router.post("/Seller/Register", (req, res) => {
     console.log(req.body);
     //Making the seller
     const {
@@ -179,8 +245,9 @@ router.post("/Register", (req, res) => {
                         //save user in database
                         newSeller.save()
                             .then(user => {
-                                    console.log(user);
-                                    req.flash('sucsess_msg', "You have registered and can login now");
+                                    //console.log(user);
+                                    req.flash('info', "You have registered and can login now");
+
                                     res.redirect("/Seller");
                                 }
 

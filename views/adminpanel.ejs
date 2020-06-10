@@ -1,11 +1,9 @@
-<div class="card text-center mt-5">
-    <div class="card-header">
-        Featured
-    </div>
+<div class="card text-center mt-5 mb-5">
     <div class="card-body">
-        <h5 class="card-title">Special title treatment</h5>
-        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-        <button class="btn btn-primary" id="req">SEND</button>
+        <h5 class="card-title">Data of new merchents</h5>
+        <p class="card-text">All the details about new merchents and if you want to do buisness with these people or not
+        </p>
+        <button class="btn btn-danger" onclick="sendRequest()">FETCH</button>
     </div>
     <div class="card-footer text-muted">
         2 days ago <p id="demo">
@@ -15,43 +13,131 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">First</th>
-                    <th scope="col">Last</th>
-                    <th scope="col">Handle</th>
+                    <th scope="col">Sr no</th>
+                    <th scope="col">Id</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">E-Mail</th>
+                    <th scope="col">Contact</th>
+                    <th scope="col">Address</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                    <td><button class="btn btn-primary">Accept</button></td>
-                    <td><button class="btn btn-warning">Reject</button></td>
+                <% data.users.forEach(function(d,n){ %>
+                <% if(d.flag === 1) { %>
+                <tr style="color:lime;">
+                    <td><%= n=n+1 %></td>
+                    <td><%= d._id %></td>
+                    <td><%= d.name %></td>
+                    <td><%= d.email %></td>
+                    <td><%= d.contact %></td>
+                    <td><%= d.address %></td>
+                    <td><button class="btn btn-primary" title="ACCEPT" id="accept-button<%= n %>"
+                            onclick="acceptFunction(this)">Accept</button>
+                    </td>
+                    <td><button class="btn btn-warning" title="REJECT" id="reject-button<%= n %>"
+                            onclick="rejectFunction(this)">Reject</button>
+                    </td>
                 </tr>
-                <tr>
-                    <th scope="row">2</th>
-                    <td>Jacob</td>
-                    <td>Thornton</td>
-                    <td>@fat</td>
-                    <td><button class="btn btn-primary">Accept</button></td>
-                    <td><button class="btn btn-warning">Reject</button></td>
+                <% } else if(d.flag === 3){ %>
+                <tr style="text-decoration: line-through;">
+                    <td><%= n=n+1 %></td>
+                    <td><%= d._id %></td>
+                    <td><%= d.name %></td>
+                    <td><%= d.email %></td>
+                    <td><%= d.contact %></td>
+                    <td><%= d.address %></td>
+                    <td><button class="btn btn-primary" title="ACCEPT" id="accept-button<%= n %>"
+                            onclick="acceptFunction(this)">Accept</button>
+                    </td>
+                    <td><button class="btn btn-warning" title="REJECT" id="reject-button<%= n %>"
+                            onclick="rejectFunction(this)">Reject</button>
+                    </td>
                 </tr>
+                <% } else { %>
                 <tr>
-                    <th scope="row">3</th>
-                    <td>Larry the Bird</td>
-                    <td>Bullocks</td>
-                    <td>@twitter</td>
-                    <td><button class="btn btn-primary">Accept</button></td>
-                    <td><button class="btn btn-warning">Reject</button></td>
+                    <td><%= n=n+1 %></td>
+                    <td><%= d._id %></td>
+                    <td><%= d.name %></td>
+                    <td><%= d.email %></td>
+                    <td><%= d.contact %></td>
+                    <td><%= d.address %></td>
+                    <td><button class="btn btn-primary" title="ACCEPT" id="accept-button<%= n %>"
+                            onclick="acceptFunction(this)">Accept</button>
+                    </td>
+                    <td><button class="btn btn-warning" title="REJECT" id="reject-button<%= n %>"
+                            onclick="rejectFunction(this)">Reject</button>
+                    </td>
                 </tr>
+                <% } %>
+                <% }); %>
+
+
             </tbody>
         </table>
     </div>
 </div>
 <script>
-    document.getElementById("req").addEventListener('click', () => {
+    function acceptFunction(elem) {
+        elem.parentElement.parentElement.style.color = "lime";
+        elem.parentElement.parentElement.style.textDecoration = "none";
+        //send a request to backend to delete the merchent with this id in the collection
+
+        const mID = elem.parentElement.parentElement.firstElementChild.nextElementSibling.innerHTML;
+        //making request to the backend
+        const myHeaders = new Headers({
+            'CustomHeader': mID
+        });
+        fetch("http://127.0.0.1:5000/AddButton", {
+                headers: myHeaders
+            })
+            .then(res => console.log(res))
+            .catch(err => console.log(err));
+
+
+    };
+
+    function rejectFunction(elem) {
+        elem.parentElement.parentElement.style.textDecoration = "line-through";
+        elem.parentElement.parentElement.style.color = "white";
+        const mID = elem.parentElement.parentElement.firstElementChild.nextElementSibling.innerHTML;
+        //making request to the backend
+        const myHeaders = new Headers({
+            'CustomHeader': mID
+        });
+        fetch("http://127.0.0.1:5000/DeleteButton", {
+                headers: myHeaders
+            })
+            .then(res => console.log(res))
+            .catch(err => console.log(err));
+
+
+        //alert(mID);
+    };
+    /* const acceptProfile = document.getElementById("accept-button");
+     const tdparent = acceptProfile.parentElement.parentElement;
+     acceptProfile.addEventListener("click", (e) => {
+         tdparent.style.color = "lime";
+         tdparent.style.textDecoration = "none";
+     });
+
+     const rejectProfile = document.getElementById("reject-button");
+     const buttonParent = rejectProfile.parentElement.parentElement;
+     rejectProfile.addEventListener("click", (e) => {
+         buttonParent.style.textDecoration = "line-through";
+         buttonParent.style.color = "white";
+     });*/
+
+    function sendRequest() {
+        const myHeaders = new Headers({
+            'CustomHeader': "value of id"
+        });
+        fetch("http://127.0.0.1:5000/DeleteButton", {
+                headers: myHeaders
+            })
+            .then(res => console.log(res))
+            .catch(err => console.log(err));
+    }
+    /*document.getElementById("req").addEventListener('click', () => {
         var url = "https://jsonplaceholder.typicode.com/users";
         var myHeaders = new Headers({
             'Content-Type': 'text/plain',
@@ -64,14 +150,9 @@
             .then(res => console.log(res));
     });
     var x = `<%= data %>`;
+    console.log(x.replace(/'/g, "  "));
     var stringx = JSON.stringify(x);
     var jsonx = JSON.parse(stringx);
     var newx = x.replace(/&#39;/g, " ");
-
-    console.log(newx);
-    //console.log(JSON.parse(newx));
-    x.forEach(element => {
-        var nodechild = element.name
-        console.log(nodechild);
-    });
+    //console.log(JSON.parse(newx));*/
 </script>

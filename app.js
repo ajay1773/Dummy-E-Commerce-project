@@ -56,7 +56,7 @@ app.use(passport.session());
 app.use(flash());
 app.use(cors());
 app.use("/Admin", router);
-app.use("/Seller", router);
+app.use("/", router);
 
 let allowCrossDomain = function (req, res, next) {
     res.header('Access-Control-Allow-Origin', "*");
@@ -70,6 +70,7 @@ app.use((req, res, next) => {
     res.locals.sucsess_msg = req.flash('sucsess_msg');
     res.locals.error_msg = req.flash('error_msg');
     res.locals.error = req.flash('error');
+    res.locals.info = req.flash('info');
     next();
 });
 
@@ -127,9 +128,6 @@ passport.deserializeUser((id, done) => {
 
 
 //Routes start here
-app.get('/', (req, res) => {
-    res.render('welcome');
-});
 
 app.get('/Login', (req, res) => {
     res.render("login");
